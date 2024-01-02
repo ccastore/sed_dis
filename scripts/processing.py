@@ -65,7 +65,7 @@ def find_changes(array):
     one_to_zero = np.where(np_array[:-1] > np_array[1:])[0]
     return np.concatenate([(zero_to_one/15.6).reshape(-1,1), (one_to_zero/15.6).reshape(-1,1)],axis=-1)
     
-def predict(audio, model_type,th):
+def predict(audio,ort_sess, model_type,th):
 
   mel=wave_to_mel(audio)
   #YOLO
@@ -105,3 +105,4 @@ def predict(audio, model_type,th):
           result.append(np.array([i[0],i[1],ind,o_prob[o].mean()]))
     return result
       
+
