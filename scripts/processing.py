@@ -67,15 +67,20 @@ def find_changes(array):
     
 def predict(audio,ort_sess, model_type,th):
   times=[]
-  times.append(("mel",datetime.datetime.now()))
+  mel_time=datetime.datetime.now()
   mel=wave_to_mel(audio)
+  times.append(("mel",mel_time,datetime.datetime.now()))
   #YOLO
   if model_type=="YOLO":
-    times.append(("pre",datetime.datetime.now()))
+    pre_time=datetime.datetime.now()
     input_sample=mel_to_model(mel,[0,7])
-    times.append(("inference",datetime.datetime.now()))
+    times.append(("pre",pre_time,datetime.datetime.now()))
+    
+    inference_time=datetime.datetime.now()
     outputs = ort_sess.run(None, {'images': input_sample})
-    times.append(("post",datetime.datetime.now()))
+    times.append(("inference",inference_time,datetime.datetime.now()))
+
+    post_time=datetime.datetime.now()
     outputs = outputs[0].transpose()[:,:,0]
     xc,w = outputs[:,0],outputs[:,2]
     cls = np.argmax(outputs[:,4:],axis=-1)
@@ -89,18 +94,20 @@ def predict(audio,ort_sess, model_type,th):
     while len(boxes)>0:
       result.append(boxes[0])
       boxes = [box for box in boxes if iou(box,boxes[0])<0.7]
-    times.append(("end",datetime.datetime.now()))
+    times.append(("post",post_time,datetime.datetime.now()))
     return result, times
 
   #CRNN
   elif model_type=="CRNN":
-    times.append(("pre",datetime.datetime.now()))
+    pre_time=datetime.datetime.now()
     input_sample=mel_to_model(mel,[0,0],False)
-
-    times.append(("inference",datetime.datetime.now()))
-    outputs = ort_sess.run(None, {'input': input_sample})[0][0]
+    times.append(("pre",pre_time,datetime.datetime.now()))
     
-    times.append(("post",datetime.datetime.now()))
+    inference_time=datetime.datetime.now()
+    outputs = ort_sess.run(None, {'input': input_sample})[0][0]
+    times.append(("inference",inference_time,datetime.datetime.now()))
+    
+    post_time=datetime.datetime.now()
     result=[]
     for ind,o in enumerate(outputs):
       o_prob=o
@@ -109,7 +116,7 @@ def predict(audio,ort_sess, model_type,th):
       if len(f)>0:
         for i in f:
           result.append(np.array([i[0],i[1],ind,o_prob[o].mean()]))
-    times.append(("end",datetime.datetime.now()))
+    times.append(("post",post_time,datetime.datetime.now()))
     return result, times
       
 
