@@ -89,6 +89,7 @@ def predict(audio,ort_sess, model_type,th):
     while len(boxes)>0:
       result.append(boxes[0])
       boxes = [box for box in boxes if iou(box,boxes[0])<0.7]
+    times.append(("end",datetime.datetime.now()))
     return result, times
 
   #CRNN
@@ -108,6 +109,7 @@ def predict(audio,ort_sess, model_type,th):
       if len(f)>0:
         for i in f:
           result.append(np.array([i[0],i[1],ind,o_prob[o].mean()]))
+    times.append(("end",datetime.datetime.now()))
     return result, times
       
 
