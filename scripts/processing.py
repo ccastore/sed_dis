@@ -66,15 +66,17 @@ def find_changes(array):
     return np.concatenate([(zero_to_one/15.6).reshape(-1,1), (one_to_zero/15.6).reshape(-1,1)],axis=-1)
     
 def predict(audio,ort_sess, model_type,th):
-
+  times=[]
+  times.append(("mel",datetime.datetime.now()))
   mel=wave_to_mel(audio)
   #YOLO
   if model_type=="YOLO":
+    times.append(("pre",datetime.datetime.now()))
     input_sample=mel_to_model(mel,[0,7])
-
+    times.append(("inference",datetime.datetime.now()))
     outputs = ort_sess.run(None, {'images': input_sample})
+    times.append(("post",datetime.datetime.now()))
     outputs = outputs[0].transpose()[:,:,0]
-
     xc,w = outputs[:,0],outputs[:,2]
     cls = np.argmax(outputs[:,4:],axis=-1)
     probs= np.max(outputs[:,4:],axis=-1)
@@ -91,10 +93,13 @@ def predict(audio,ort_sess, model_type,th):
 
   #CRNN
   elif model_type=="CRNN":
+    times.append(("pre",datetime.datetime.now()))
     input_sample=mel_to_model(mel,[0,0],False)
-    t2=datetime.datetime.now() #Preprocessing
-    outputs = ort_sess.run(None, {'input': input_sample})[0][0]
 
+    times.append(("inference",datetime.datetime.now()))
+    outputs = ort_sess.run(None, {'input': input_sample})[0][0]
+    
+    times.append(("post",datetime.datetime.now()))
     result=[]
     for ind,o in enumerate(outputs):
       o_prob=o
@@ -103,6 +108,6 @@ def predict(audio,ort_sess, model_type,th):
       if len(f)>0:
         for i in f:
           result.append(np.array([i[0],i[1],ind,o_prob[o].mean()]))
-    return result
+    return result, times
       
 
