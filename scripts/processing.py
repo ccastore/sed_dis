@@ -89,7 +89,7 @@ def predict(audio,ort_sess, model_type,th):
     while len(boxes)>0:
       result.append(boxes[0])
       boxes = [box for box in boxes if iou(box,boxes[0])<0.7]
-    return result
+    return result, times
 
   #CRNN
   elif model_type=="CRNN":
