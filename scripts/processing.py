@@ -2,10 +2,6 @@ import onnxruntime as ort
 import numpy as np
 import librosa as lb
 import datetime
-import time
-import psutil
-import os
-
 
 def load_audio(audio,sr):
   audio,sr=lb.load(audio,sr=sr)
@@ -28,6 +24,7 @@ def wave_to_mel(audio):
   mel = lb.core.amplitude_to_db(mel)
   mel = np.clip(mel,-50, 80)
   mel =(mel-np.min(mel,axis=(0,1),keepdims=True))/(np.max(mel,axis=(0,1),keepdims=True)-np.min(mel,axis=(0,1),keepdims=True))
+  
   return mel
 
 def mel_to_model(mel,pad, yolo=True):
