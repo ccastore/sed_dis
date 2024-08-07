@@ -12,6 +12,7 @@ def split_audio(audio,sr):
   for j in np.arange(0,len(audio),10*sr):
     audio_aux=audio[j:j+(10*sr)]
     audio_aux=lb.util.normalize(audio_aux)
+
     if len(audio_aux) >= 3*sr:
       audios.append(audio_aux)
   return audios
@@ -24,7 +25,7 @@ def wave_to_mel(audio):
   mel = lb.core.amplitude_to_db(mel)
   mel = np.clip(mel,-50, 80)
   mel =(mel-np.min(mel,axis=(0,1),keepdims=True))/(np.max(mel,axis=(0,1),keepdims=True)-np.min(mel,axis=(0,1),keepdims=True))
-  
+
   return mel
 
 def mel_to_model(mel,pad, yolo=True):
