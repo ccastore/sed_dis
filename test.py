@@ -10,7 +10,7 @@ import tqdm
 
 model_type="YOLO" #select model YOLO / CRNN
 providers=['CPUExecutionProvider']
-quantize="_mixed" #_orinigal, _pruned_01, _pruned_001, quantized_int8, quantized_int8_d
+quantize="_mixed" #_original, _pruned_01, _pruned_001, quantized_int8, quantized_int8_d
 reduction="True"
 
 if reduction:
