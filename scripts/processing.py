@@ -24,7 +24,9 @@ def wave_to_mel(audio):
 
   mel = lb.core.amplitude_to_db(mel)
   mel = np.clip(mel,-50, 80)
-  mel =(mel-np.min(mel,axis=(0,1),keepdims=True))/(np.max(mel,axis=(0,1),keepdims=True)-np.min(mel,axis=(0,1),keepdims=True))
+  min=-38.5
+  max=41.37
+  mel =(mel-min)/(max-min)
 
   return mel
 
